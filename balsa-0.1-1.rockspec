@@ -7,7 +7,7 @@ source = {
 description = {
   summary  = "An ultra-lightweight tree builder",
   detailed = [[
-    218 lines of yue (a whitespace Lua dialect): csv, equal-frequency
+    247 lines of yue (a whitespace Lua dialect): csv, equal-frequency
     bins, deep random forests and AUC, within two points of LightGBM
     at 1% of the code. The compiled balsa.lua is checked in, so the
     rock needs only Lua; edit balsa.yue and rebuild if hacking.]],

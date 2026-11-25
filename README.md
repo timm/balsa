@@ -1,7 +1,7 @@
 # balsa : an ultra-lightweight tree builder
 
 Balsa's claim to fame is strength-to-weight, not strength. Same here:
-218 lines of [yue](https://yuescript.org) that stay within two AUC
+247 lines of [yue](https://yuescript.org) that stay within two AUC
 points of LightGBM's 36,328 lines of C++ over 98 classification sets,
 and win outright on the 61 software-engineering ones. In the box:
 csv reading, equal-frequency bins, deep random forests that cut on
