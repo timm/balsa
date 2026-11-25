@@ -1,0 +1,10 @@
+# luarocks build junk
+*.rock
+*.src.rock
+.luarocks/
+lua_modules/
+luac.out
+# editors / os
+*.swp
+*~
+.DS_Store

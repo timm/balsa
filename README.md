@@ -14,6 +14,16 @@ person edits; `balsa.lua` is GENERATED from it).
 
 [docs]: https://timm.github.io/balsa/
 
+## Quick start
+
+    git clone https://github.com/timm/balsa && cd balsa
+    make test      # 4 checks: does this work here?
+    make demo      # grow a forest on the bundled data, print its auc
+
+Both also run without make: `lua test.lua`, `lua demo.lua`. The two
+csvs in `data/` come from [moot](https://github.com/timm/moot) (too
+big to clone just to kick the tyres).
+
 ## Install
 
 Each step only if the one before is missing:
