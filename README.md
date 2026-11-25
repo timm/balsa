@@ -41,15 +41,16 @@ One csv, first row names the columns. The names are the schema:
 | ends in `X` (`idX`)       | ignored |
 | cell holds `?`            | unknown value |
 
-E.g. `moot/classify/heart.c.csv` -- `AGE` numeric, `sex` symbolic,
-`num!` the (symbolic) class:
+E.g. `moot/classify/weather.csv` -- `Temp`, `Humid` numeric;
+`outlook`, `windy` symbolic; `play!` the (symbolic) class
+(cells may be padded for alignment; whitespace is trimmed):
 
 ```csv
-AGE,sex,cp,TRESTBPS,CHOL,fbs,restecg,THALACH,exang,OLDPEAK,slope,CA,thal,num!
-63,male,typ_angina,145,233,t,left_vent_hyper,150,no,2.3,down,0,fixed_defect,<50
-67,male,asympt,160,286,f,left_vent_hyper,108,yes,1.5,flat,3,normal,>50_1
-37,male,non_anginal,130,250,f,normal,187,no,3.5,down,0,normal,<50
-41,female,atyp_angina,130,204,f,left_vent_hyper,172,no,1.4,up,0,normal,<50
+outlook,  Temp, Humid, windy, play!
+sunny,      85,    85, FALSE, no
+sunny,      80,    90, TRUE,  no
+overcast,   83,    86, FALSE, yes
+rainy,      70,    96, FALSE, yes
 ```
 
 ## Use
