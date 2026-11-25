@@ -79,11 +79,13 @@ small int `1..n` (`?` becomes `-1`), and each column's legend maps
 back (`tb.cols.klass.labels[i]` = the i-th class's name). That is
 why one seed gives one answer on any Lua.
 
-Knobs sit in `b.k` (defaults in parentheses): `trees` (30), `bins`
-(16), `cap` (200 rows per class), `leaf` (2), `maxd` (30), `rf`
-(true: sqrt(|x|) columns per cut), `seed`. Set before `Tbl`/`forest`.
+Knobs sit in `b.the` (defaults in parentheses): `trees` (30),
+`bins` (16), `cap` (200 rows per class), `leaf` (2), `maxd` (30),
+`rf` (true: sqrt(|x|) columns per cut), `seed`, and for the rig's
+stats, `eps` (0.35) and `prudence` (0.01: mean gaps smaller than
+this are never called different). Set before `Tbl`/`forest`.
 
-Exports: `k srand rand shuffle bisect csv Tbl adds div tree leaf_of
+Exports: `the srand rand shuffle bisect csv Tbl adds div tree leaf_of
 forest votes auc aucs`.
 
 ## Output format
