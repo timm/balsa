@@ -1,42 +1,83 @@
 # balsa : a light wood for tabular learning
 
-Balsa's claim to fame is strength-to-weight, not strength. So is this
-learner's: 218 lines of [yue](https://yuescript.org) that stay within
-two AUC points of LightGBM's 36,328 lines of C++ over 98 data sets,
-and win outright on the 61 software-engineering ones.
+Balsa's claim to fame is strength-to-weight, not strength. Same here:
+218 lines of [yue](https://yuescript.org) that stay within two AUC
+points of LightGBM's 36,328 lines of C++ over 98 classification sets,
+and win outright on the 61 software-engineering ones. In the box:
+csv reading, equal-frequency bins, deep random forests that cut on
+bin numbers, tie-aware AUC, and a seeded Park-Miller random so one
+seed gives one model on any Lua, anywhere.
 
-What is in the box: csv reading (moot header conventions: uppercase =
-numeric, trailing `!` = class, trailing `X` = skip), equal-frequency
-discretization, deep random forests that cut on bin numbers, a
-tie-aware AUC, and a seeded Park-Miller random so the same seed gives
-the same model in Lua, Lisp or Python.
+The code, pretty-printed three-up: [docs/index.html][docs]. The rock
+ships two files: `balsa.lua` (what Lua loads) and `balsa.yue` (what a
+person edits; `balsa.lua` is GENERATED from it).
+
+[docs]: https://timm.github.io/balsa/
 
 ## Install
 
-    luarocks install balsa
+Each step only if the one before is missing:
 
-or just copy `balsa.lua` somewhere on your `LUA_PATH`; it has no
-dependencies.
+1. **a Lua.** Best: `brew install luajit` (or `apt install luajit`).
+   Plain `lua` 5.1+ works too, slower.
+2. **luarocks** (optional, only for the one-line install):
+   `brew install luarocks` / `apt install luarocks`.
+3. **balsa:** `luarocks install balsa` -- or skip luarocks and copy
+   `balsa.lua` anywhere on your `LUA_PATH`. No dependencies.
+4. **yue** (optional, only to hack the source):
+   `luarocks install yuescript` (needs cmake).
+5. **data:** `git clone https://github.com/timm/moot ~/gits/moot`
+   -- 100+ classification csvs in the format below.
+
+## Input format
+
+One csv, first row names the columns. The names are the schema:
+
+| name looks like | meaning |
+|---|---|
+| starts uppercase (`Age`)  | numeric column |
+| starts lowercase (`sex`)  | symbolic column |
+| ends in `!` (`class!`)    | the class to predict |
+| ends in `X` (`idX`)       | ignored |
+| cell holds `?`            | unknown value |
 
 ## Use
 
 ```lua
 local b  = require "balsa"
-local tb = b.Tbl(b.csv("data.csv"))
+local tb = b.Tbl(b.csv("~/gits/moot/classify/diabetes.csv"))
 local at = tb.cols.klass.at
-local y  = function(row) return row[at] end
-local f  = b.forest(tb, tb.rows, y)
-print(b.aucs(b.votes(f, tb.rows, y)))
+local y  = function(row) return row[at] end        -- a row's label
+local f  = b.forest(tb, tb.rows, y)                -- 30 trees
+print(b.aucs(b.votes(f, tb.rows, y)))              -- 0..100
 ```
+
+Knobs sit in `b.k` (defaults in parentheses): `trees` (30), `bins`
+(16), `cap` (200 rows per class), `leaf` (2), `maxd` (30), `rf`
+(true: sqrt(|x|) columns per cut), `seed`. Set before `Tbl`/`forest`.
+
+Exports: `k srand rand shuffle bisect csv Tbl adds div tree leaf_of
+forest votes auc aucs`.
+
+## Output format
+
+The experiment rigs (in balsa-dev, not this rock) print one line per
+cross-validation fold:
+
+    data|auc1 auc2 ..|secs1 secs2 ..|test row ids
+
+one auc and seconds per learner, and the 0-based csv row numbers of
+that fold's test set -- so any other tool can replay the exact same
+folds. That replay is how LightGBM and TabICL were scored against
+balsa on identical splits.
 
 ## Hack
 
-`balsa.lua` is GENERATED from `balsa.yue`; edit the `.yue`, then
-
-    yue -c -s balsa.yue
-
-Experiments, rigs, stats, the Lisp twin and all the results live next
-door in [balsa-dev](https://github.com/timm/balsa-dev). This repo is
-only what the rock ships.
+Edit `balsa.yue`, then `yue -c -s balsa.yue`, and commit both files.
+Everything else -- experiment rigs, the Lisp twin, LightGBM/TabICL
+hooks, all scores, charts, and the Makefile that regenerates this
+repo's `docs/` -- lives in
+[balsa-dev](https://github.com/timm/balsa-dev); there, `make package`
+rebuilds and refreshes this repo.
 
 (c) 2026 Tim Menzies <timm@ieee.org>, MIT license.
