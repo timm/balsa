@@ -69,15 +69,15 @@ rainy,      70,    96, FALSE, yes
 local b  = require "balsa"
 local tb = b.Tbl(b.csv("~/gits/moot/classify/diabetes.csv"))
 local at = tb.cols.klass.at
-local y  = function(row) return row[at] end        -- a row's label
+local y  = function(row) return row.labels[at] end -- its class label
 local f  = b.forest(tb, tb.rows, y)                -- 30 trees
 print(b.aucs(b.votes(f, tb.rows, y)))              -- 0..100
 ```
 
-Note `Tbl` rewrites class cells to integer labels `1..nk` (in
-first-seen file order; `?` becomes `-1`) -- that is why one seed
-gives one answer on any Lua. `tb.cols.klass.labels[i]` gets the
-name back.
+Note every cell is labeled at load: `row.labels[col.at]` holds a
+small int `1..n` (`?` becomes `-1`), and each column's legend maps
+back (`tb.cols.klass.labels[i]` = the i-th class's name). That is
+why one seed gives one answer on any Lua.
 
 Knobs sit in `b.k` (defaults in parentheses): `trees` (30), `bins`
 (16), `cap` (200 rows per class), `leaf` (2), `maxd` (30), `rf`
