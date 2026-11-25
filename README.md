@@ -1,4 +1,4 @@
-# balsa : a light wood for tabular learning
+# balsa : an ultra-lightweight tree builder
 
 Balsa's claim to fame is strength-to-weight, not strength. Same here:
 218 lines of [yue](https://yuescript.org) that stay within two AUC

@@ -5,7 +5,7 @@ source = {
   tag = "v0.1"
 }
 description = {
-  summary  = "A light wood for tabular learning",
+  summary  = "An ultra-lightweight tree builder",
   detailed = [[
     218 lines of yue (a whitespace Lua dialect): csv, equal-frequency
     bins, deep random forests and AUC, within two points of LightGBM
