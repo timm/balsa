@@ -68,8 +68,8 @@ Optimization: `tb.disty(row)` is a row's distance to heaven over
 the `+`/`-` goals; regress on that, sort by the prediction.
 
 Note every cell is labeled at load: `row.labels[col.at]` holds a
-small int `1..n` (`?` becomes `-1`), and each column's legend maps
-back (`tb.cols.klass.labels[i-1]` = label i's name). That is why one
+small int `0..n-1` (`?` becomes `-1`), and each column's legend maps
+back (`tb.cols.klass.labels[i]` = label i's name). That is why one
 seed gives one answer anywhere.
 
 Knobs sit in `b.the` (defaults in parentheses): `trees` (30),
