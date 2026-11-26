@@ -1,0 +1,11 @@
+[project]
+name = "balsa"
+version = "0.2"
+description = "An ultra-lightweight tree builder"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Tim Menzies", email = "timm@ieee.org"}]
+requires-python = ">=3.11"
+
+[tool.setuptools]
+py-modules = ["balsa"]

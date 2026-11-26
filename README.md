@@ -1,43 +1,30 @@
 # balsa : an ultra-lightweight tree builder
 
 Balsa's claim to fame is strength-to-weight, not strength. Same here:
-247 lines of [yue](https://yuescript.org) that stay within two AUC
-points of LightGBM's 36,328 lines of C++ over 98 classification sets,
-and win outright on the 61 software-engineering ones. In the box:
-csv reading, equal-frequency bins, deep random forests that cut on
-bin numbers, tie-aware AUC, and a seeded Park-Miller random so one
-seed gives one model on any Lua, anywhere.
+246 lines of Python that stay within two AUC points of LightGBM's
+36,328 lines of C++ over 98 classification sets, win outright on the
+61 software-engineering ones, and also do regression (MAE within a
+point of LightGBM) and optimization (rank, label 5, keep the best).
+In the box: csv reading, equal-frequency bins, deep random forests
+that cut on small-integer labels, tie-aware AUC, distance-to-heaven
+over many goals, and a seeded Park-Miller random so one seed gives
+one answer on any interpreter.
 
-The code, pretty-printed three-up: [docs/index.html][docs]. The rock
-ships two files: `balsa.lua` (what Lua loads) and `balsa.yue` (what a
-person edits; `balsa.lua` is GENERATED from it).
+The code, pretty-printed three-up: [docs/index.html][docs]. One file:
+`balsa.py`. No dependencies. Run it with pypy3 for speed (the big
+corpus runs use it), or any Python 3.11+.
 
 [docs]: https://timm.github.io/balsa/
 
-## Quick start
-
-    git clone https://github.com/timm/balsa && cd balsa
-    make test      # 4 checks: does this work here?
-    make demo      # grow a forest on the bundled data, print its auc
-
-Both also run without make: `lua test.lua`, `lua demo.lua`. The two
-csvs in `data/` come from [moot](https://github.com/timm/moot) (too
-big to clone just to kick the tyres).
-
 ## Install
 
-Each step only if the one before is missing:
-
-1. **a Lua.** Best: `brew install luajit` (or `apt install luajit`).
-   Plain `lua` 5.1+ works too, slower.
-2. **luarocks** (optional, only for the one-line install):
-   `brew install luarocks` / `apt install luarocks`.
-3. **balsa:** `luarocks install balsa` -- or skip luarocks and copy
-   `balsa.lua` anywhere on your `LUA_PATH`. No dependencies.
-4. **yue** (optional, only to hack the source):
-   `luarocks install yuescript` (needs cmake).
-5. **data:** `git clone https://github.com/timm/moot ~/gits/moot`
-   -- 100+ classification csvs in the format below.
+1. **a Python.** Best: `brew install pypy3` (or `apt install pypy3`).
+   Plain CPython 3.11+ works too, slower.
+2. **balsa:** copy `balsa.py` next to your code -- that is the whole
+   install -- or `pip install -e .` from this repo for a module on
+   your path.
+3. **data:** `git clone https://github.com/timm/moot ~/gits/moot`
+   -- hundreds of csvs in the format below.
 
 ## Input format
 
@@ -48,6 +35,7 @@ One csv, first row names the columns. The names are the schema:
 | starts uppercase (`Age`)  | numeric column |
 | starts lowercase (`sex`)  | symbolic column |
 | ends in `!` (`class!`)    | the class to predict |
+| ends in `+` / `-`         | a goal to maximize / minimize |
 | ends in `X` (`idX`)       | ignored |
 | cell holds `?`            | unknown value |
 
@@ -65,48 +53,50 @@ rainy,      70,    96, FALSE, yes
 
 ## Use
 
-```lua
-local b  = require "balsa"
-local tb = b.Tbl(b.csv("~/gits/moot/classify/diabetes.csv"))
-local at = tb.cols.klass.at
-local y  = function(row) return row.labels[at] end -- its class label
-local f  = b.forest(tb, tb.rows, y)                -- 30 trees
-print(b.aucs(b.votes(f, tb.rows, y)))              -- 0..100
+```python
+import balsa as b
+tb = b.Tbl(b.csv("~/gits/moot/classify/diabetes.csv"))
+at = tb.cols.klass.at
+y  = lambda row: row.labels[at]              # its class label
+f  = b.Forest(tb, tb.rows, y)                # 30 trees
+print(b.aucs(f.votes(tb.rows, y)))           # 0..100
 ```
+
+Regression: pass the Num summary and read `predict` --
+`f = b.Forest(tb, tb.rows, y, b.Col); f.predict(row)`.
+Optimization: `tb.disty(row)` is a row's distance to heaven over
+the `+`/`-` goals; regress on that, sort by the prediction.
 
 Note every cell is labeled at load: `row.labels[col.at]` holds a
 small int `1..n` (`?` becomes `-1`), and each column's legend maps
-back (`tb.cols.klass.labels[i]` = the i-th class's name). That is
-why one seed gives one answer on any Lua.
+back (`tb.cols.klass.labels[i-1]` = label i's name). That is why one
+seed gives one answer anywhere.
 
 Knobs sit in `b.the` (defaults in parentheses): `trees` (30),
 `bins` (16), `cap` (200 rows per class), `leaf` (2), `maxd` (30),
-`rf` (true: sqrt(|x|) columns per cut), `seed`, and for the rig's
-stats, `prudence` (0.01: mean gaps smaller than this are never
-called different). Set before `Tbl`/`forest`.
-
-Exports: `the srand rand shuffle bisect csv Tbl adds div tree leaf_of
-forest votes auc aucs`.
+`rf` (True: sqrt(|x|) columns per cut for classification, |x|/3 for
+regression), `seed`, and for the rig's stats `prudence` (0.01: mean
+gaps smaller than this are never called different).
 
 ## Output format
 
-The experiment rigs (in balsa-dev, not this rock) print one line per
+The experiment rigs (in balsa-dev, not this repo) print one line per
 cross-validation fold:
 
-    data|auc1 auc2 ..|secs1 secs2 ..|test row ids
+    data|scores|secs|test row ids
 
-one auc and seconds per learner, and the 0-based csv row numbers of
+one score and seconds per learner, and the 0-based csv row numbers of
 that fold's test set -- so any other tool can replay the exact same
 folds. That replay is how LightGBM and TabICL were scored against
 balsa on identical splits.
 
 ## Hack
 
-Edit `balsa.yue`, then `yue -c -s balsa.yue`, and commit both files.
-Everything else -- experiment rigs, the Lisp twin, LightGBM/TabICL
-hooks, all scores, charts, and the Makefile that regenerates this
-repo's `docs/` -- lives in
-[balsa-dev](https://github.com/timm/balsa-dev); there, `make package`
-rebuilds and refreshes this repo.
+Edit `balsa.py`; there is no build step. Everything else --
+experiment rigs, the Lisp twin, the retired Lua/Yue line (it lives
+in the attic), LightGBM/TabICL hooks, all scores, charts, and the
+Makefile that regenerates this repo's `docs/` -- is in
+[balsa-dev](https://github.com/timm/balsa-dev); there, `make
+package` refreshes this repo.
 
 (c) 2026 Tim Menzies <timm@ieee.org>, MIT license.
