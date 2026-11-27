@@ -1,7 +1,7 @@
 # balsa : an ultra-lightweight tree builder
 
 Balsa's claim to fame is strength-to-weight, not strength. Same here:
-246 lines of Python that stay within two AUC points of LightGBM's
+262 lines of Python that stay within two AUC points of LightGBM's
 36,328 lines of C++ over 98 classification sets, win outright on the
 61 software-engineering ones, and also do regression (MAE within a
 point of LightGBM) and optimization (rank, label 5, keep the best).
