@@ -1,11 +1,30 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "enuf"
 version = "0.2"
-description = "An ultra-lightweight tree builder"
+description = "Trees that are good enough: small, fast, close to LightGBM"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE.md"]
 authors = [{name = "Tim Menzies", email = "timm@ieee.org"}]
 requires-python = ">=3.11"
+keywords = ["random forest", "decision trees", "classification",
+            "regression", "optimization", "tabular data"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Homepage = "https://github.com/timm/enuf"
+Documentation = "https://timm.github.io/enuf/"
+Source = "https://github.com/timm/enuf"
 
 [tool.setuptools]
 py-modules = ["enuf"]
