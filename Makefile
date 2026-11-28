@@ -11,6 +11,11 @@ LUA ?= $(shell command -v luajit || command -v lua)
 help: ## show this help
 	grep -E '^[a-z.]+:.*##' Makefile | sed 's/:.*## /\t/'
 
+msg ?= saving
+
+push: ## git add everything, commit (msg="..."), push
+	git add . && { git commit -m "$(msg)" || true; } && git push
+
 demo: ## grow a forest on data/diabetes.csv, print its auc
 	$(LUA) demo.lua
 
