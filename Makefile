@@ -1,6 +1,6 @@
 # For people who cloned this repo. demo.py and test.py also run
 # without make:  pypy3 demo.py ; pypy3 test.py
-# The learner is generated next door in balsa-dev (see Hack in
+# The learner is generated next door in enuf-dev (see Hack in
 # README.md); nothing here is touched by its `make package`.
 SHELL := bash
 .SILENT:
@@ -23,5 +23,5 @@ test: ## does this install work? (4 checks, non-zero exit if not)
 	$(PY) test.py
 
 install: ## pip install this working copy (editable), then test
-	$(PY) -m pip install -e . && cd /tmp && $(PY) -c 'import balsa' \
-	  && echo "balsa installed"
+	$(PY) -m pip install -e . && cd /tmp && $(PY) -c 'import enuf' \
+	  && echo "enuf installed"

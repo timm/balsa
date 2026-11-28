@@ -1,6 +1,6 @@
-"""balsa out of the box: grow a forest, score it.
+"""enuf out of the box: grow a forest, score it.
 Run: pypy3 demo.py [file.csv]"""
-import sys, balsa as b
+import sys, enuf as b
 
 file = sys.argv[1] if len(sys.argv) > 1 else "data/diabetes.csv"
 tb = b.Tbl(b.csv(file))                       # read; label cells -> 0..nk-1
