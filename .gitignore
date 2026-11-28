@@ -1,9 +1,7 @@
-# luarocks build junk
-*.rock
-*.src.rock
-.luarocks/
-lua_modules/
-luac.out
+# python build junk
+__pycache__/
+*.egg-info/
+build/
 # editors / os
 *.swp
 *~
